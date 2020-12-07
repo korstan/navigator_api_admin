@@ -1,7 +1,7 @@
 const BuildingRoute = require('./building');
-const LevelRoute = require('./level');
+const LocationRoute = require('./location');
 
 module.exports = (app) => {
   app.use(BuildingRoute.routes());
-  app.use(LevelRoute.routes());
+  app.use(LocationRoute.routes());
 }

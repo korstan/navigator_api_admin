@@ -1,9 +1,9 @@
 const knex = require('../connection');
 
 module.exports = {
-  create(newLocation) {
-    return knex('locations')
+  create(newPoints) {
+    return knex('points')
       .returning('*')
-      .insert(newLocation);
+      .insert(newPoints);
   }
 }
