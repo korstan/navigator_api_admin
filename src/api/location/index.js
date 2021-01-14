@@ -47,4 +47,39 @@ router.post('/new', async (ctx, next) => {
   }
 });
 
+router.put('/:id/edit', async (ctx, next) => {
+  try {
+    const id = ctx.params.id;
+    const reqBody = ctx.request.body;
+    const [points] = await Query.Points.update({ locationId: id, x1: reqBody.x, y1: reqBody.y });
+    const [location] = await Query.Locations.update({ id, title: reqBody.title, level: reqBody.level });
+    ctx.body = { 
+      id,
+      level: location.level,
+      title: location.title,
+      x: points.x1,
+      y: points.y1
+    };
+    ctx.status = 200;
+  } catch (error) {
+    ctx.body = { error: { message: 'Internal Server Error' } };
+    ctx.status = 500;
+  }
+  await next();
+});
+
+router.delete('/:id/remove', async (ctx, next) => {
+  try {
+    const id = ctx.params.id;
+    await Query.Points.removeByLocationId(id);
+    await Query.Locations.removeById(id);
+    ctx.body = { id };
+    ctx.status = 200;
+  } catch (error) {
+    ctx.body = { error: { message: 'Internal Server Error' } };
+    ctx.status = 500;
+  }
+  await next();
+});
+
 module.exports = router;

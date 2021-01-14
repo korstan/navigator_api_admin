@@ -9,5 +9,15 @@ module.exports = {
     return knex('buildings')
       .returning('*')
       .insert(newBuilding);
+  },
+  update(building) {
+    return knex('buildings')
+      .where('id', building.id)
+      .update(building, ['id', 'title'])
+  },
+  removeById(id) {
+    return knex('buildings')
+      .where('id', id)
+      .del();
   }
 }

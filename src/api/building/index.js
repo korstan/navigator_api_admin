@@ -5,6 +5,8 @@ const router = new Router({ prefix: BASE_PATH });
 
 const Query = {
   Buildings: require('../../db/queries/buildings'),
+  Locations: require('../../db/queries/locations'),
+  Points: require('../../db/queries/points')
 };
 
 router.post('/new', async (ctx, next) => {
@@ -24,6 +26,37 @@ router.post('/new', async (ctx, next) => {
     ctx.status = 500;
     ctx.body = { error: { message: 'Internal Server Error' } };
   }
+});
+
+router.put('/:id/edit', async (ctx, next) => {
+  try {
+    const reqBody = ctx.request.body;
+    const [building] = await Query.Buildings.update(reqBody);
+    ctx.body = building;
+    ctx.status = 200;
+  } catch (error) {
+    ctx.body = { error: { message: 'Internal Server Error' } };
+    ctx.status = 500;
+  }
+  await next();
+});
+
+router.delete('/:id/remove', async (ctx, next) => {
+  try {
+    const id = ctx.params.id;
+    const locations = await Query.Locations.getAllByBuildingId(id);
+    for(let location of locations) {
+      await Query.Points.removeByLocationId(location.id);
+      await Query.Locations.removeById(location.id);
+    }
+    await Query.Buildings.removeById(id);
+    ctx.body = { id };
+    ctx.status = 200;
+  } catch (error) {
+    ctx.body = { error: { message: 'Internal Server Error' } };
+    ctx.status = 500;
+  }
+  await next();
 });
 
 module.exports = router;
