@@ -12,11 +12,13 @@ const Query = {
 router.post('/new', async (ctx, next) => {
   try {
     if (ctx.request.body.buildingId && ctx.request.body.title && ctx.request.body.level && ctx.request.body.x && ctx.request.body.y) {
-      const { buildingId, title, level, x, y } = ctx.request.body;
+      const { buildingId, title, level, x, y, x_entry, y_entry } = ctx.request.body;
       const [newLocation] = await Query.Locations.create({
         buildingId,
         title,
-        level
+        level,
+        x_entry,
+        y_entry
       });
       const [newLocationPoints] = await Query.Points.create({
         locationId: newLocation.id,
@@ -32,6 +34,10 @@ router.post('/new', async (ctx, next) => {
           points: {
             x1: newLocationPoints.x1,
             y1: newLocationPoints.y1,
+          },
+          entryPoints: {
+            x: newLocation.x_entry,
+            y: newLocation.y_entry,
           }
         }
       };
@@ -52,13 +58,21 @@ router.put('/:id/edit', async (ctx, next) => {
     const id = ctx.params.id;
     const reqBody = ctx.request.body;
     const [points] = await Query.Points.update({ locationId: id, x1: reqBody.x, y1: reqBody.y });
-    const [location] = await Query.Locations.update({ id, title: reqBody.title, level: reqBody.level });
+    const [location] = await Query.Locations.update({ 
+      id, 
+      title: reqBody.title, 
+      level: reqBody.level, 
+      x_entry: reqBody.x_entry || null, 
+      y_entry: reqBody.y_entry || null
+    });
     ctx.body = { 
       id,
       level: location.level,
       title: location.title,
       x: points.x1,
-      y: points.y1
+      y: points.y1,
+      x_entry: location.x_entry,
+      y_entry: location.y_entry,
     };
     ctx.status = 200;
   } catch (error) {

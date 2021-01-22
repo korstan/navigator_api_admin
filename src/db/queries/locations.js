@@ -14,7 +14,7 @@ module.exports = {
   update(location) {
     return knex('locations')
       .where('id', location.id)
-      .update(location, ['level', 'title']);
+      .update(location, ['level', 'title', 'x_entry', 'y_entry']);
   },
   removeById(id) {
     return knex('locations')
