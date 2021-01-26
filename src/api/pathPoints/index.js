@@ -13,13 +13,15 @@ const Query = {
 router.post('/new', async (ctx, next) => {
   try {
     if (ctx.request.body.buildingId && ctx.request.body.title && ctx.request.body.level && ctx.request.body.x && ctx.request.body.y) {
-      const { buildingId, title, level, x, y } = ctx.request.body;
+      const { buildingId, title, level, x, y, textToSpeech, isStairs } = ctx.request.body;
       const [newPoint] = await Query.PathPoints.create({
         buildingId,
         title,
         level,
         x,
-        y
+        y,
+        textToSpeech,
+        isStairs,
       });
       ctx.status = 200;
       ctx.body = {
@@ -28,7 +30,9 @@ router.post('/new', async (ctx, next) => {
           id: newPoint.id,
           title: newPoint.title,
           x: newPoint.x,
-          y: newPoint.y
+          y: newPoint.y,
+          textToSpeech: newPoint.textToSpeech,
+          isStairs: newPoint.isStairs,
         }
       };
     } else {
@@ -51,7 +55,9 @@ router.put('/:id/edit', async (ctx, next) => {
       title: reqBody.title, 
       level: reqBody.level, 
       x: reqBody.x, 
-      y: reqBody.y
+      y: reqBody.y,
+      textToSpeech: reqBody.textToSpeech,
+      isStairs: reqBody.isStairs
     });
     
     await Query.PathPoints.removeAllPointLinks(id);
@@ -65,6 +71,8 @@ router.put('/:id/edit', async (ctx, next) => {
       title: pathPoint.title,
       x: pathPoint.x,
       y: pathPoint.y,
+      textToSpeech: pathPoint.textToSpeech,
+      isStairs: pathPoint.isStairs,
     };
     ctx.status = 200;
   } catch (error) {

@@ -9,7 +9,7 @@ module.exports = {
   update(id,point) {
     return knex('pathPoints')
       .where('id',id)
-      .update(point, ['id', 'buildingId', 'level', 'title', 'x', 'y'])
+      .update(point, ['id', 'buildingId', 'level', 'title', 'x', 'y', 'textToSpeech', 'isStairs'])
   },
   removeById(id) {
     return knex('pathPoints')
